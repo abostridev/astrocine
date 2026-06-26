@@ -26,4 +26,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Erreur serveur' });
 });
 
+// Auto-ping pour éviter la mise en veille sur Render (plan gratuit)
+if (process.env.NODE_ENV === 'production') {
+  const SELF_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+  setInterval(() => {
+    require('https').get(`${SELF_URL}/api/health`, (res) => {
+      console.log(`Self-ping: ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.log('Self-ping failed:', err.message);
+    });
+  }, 10 * 60 * 1000); // toutes les 10 minutes
+}
+
 app.listen(PORT, () => console.log(`Backend lancé sur http://localhost:${PORT}`));
