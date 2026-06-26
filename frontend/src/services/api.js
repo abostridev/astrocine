@@ -2,8 +2,10 @@
 export const getLang = () => localStorage.getItem('ac_lang') || 'fr-FR';
 export const setLang = (l) => { localStorage.setItem('ac_lang', l); window.location.reload(); };
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 const get = async (path, params = {}) => {
-  const url = new URL(`/api${path}`, window.location.origin);
+  const url = new URL(`${API_BASE}/api${path}`, API_BASE ? undefined : window.location.origin);
   url.searchParams.set('lang', getLang());
   Object.entries(params).forEach(([k, v]) => v !== undefined && v !== '' && url.searchParams.set(k, v));
   const res = await fetch(url.toString());
